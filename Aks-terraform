@@ -1,0 +1,20 @@
+resource "azurerm_managed_cluster" "aksClusterName" {
+  name                = "aks101cluster-vmss"
+  location            = var.location
+  dns_prefix          = var.dnsPrefix
+  kubernetes_version  = "1.18.8"
+  enable_rbac         = true
+  agent_pool_profile {
+    name            = "agentpool"
+    os_disk_size_gb = var.osDiskSizeGB
+    count           = var.agentCount
+    vm_size         = var.agentVMSize
+    os_type         = var.osType
+    storage_profile = "ManagedDisks"
+    type            = "VirtualMachineScaleSets"
+    mode            = "System"
+  }
+  tags = {
+    displayname = "AKS Cluster"
+  }
+}
