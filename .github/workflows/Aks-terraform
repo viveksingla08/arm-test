@@ -1,0 +1,56 @@
+variable "location" {
+  type        = string
+  description = "The location of AKS resource."
+    default = "eastus2"
+}
+
+variable "dnsPrefix" {
+  type        = string
+  description = "Optional DNS prefix to use with hosted Kubernetes API server FQDN."
+  default = ""
+}
+
+variable "osDiskSizeGB" {
+  type        = number
+  description = "Disk size (in GiB) to provision for each of the agent pool nodes. This value ranges from 0 to 1023. Specifying 0 will apply the default disk size for that agentVMSize."
+  default     = 0
+}
+
+variable "agentCount" {
+  type        = number
+  description = "The number of nodes for the cluster. 1 Node is enough for Dev/Test and minimum 3 nodes, is recommended for Production"
+  default     = 3
+}
+
+variable "agentVMSize" {
+  type        = string
+  description = "The size of the Virtual Machine."
+  default     = "Standard_DS2_v2"
+}
+
+variable "osType" {
+  type        = string
+  description = "The type of operating system."
+  default     = "Linux"
+}
+
+resource "azurerm_managed_cluster" "aksClusterName" {
+  name                = "aks101cluster-vmss"
+  location            = var.location
+  dns_prefix          = var.dnsPrefix
+  kubernetes_version  = "1.18.8"
+  enable_rbac         = true
+  agent_pool_profile {
+    name            = "agentpool"
+    os_disk_size_gb = var.osDiskSizeGB
+    count           = var.agentCount
+    vm_size         = var.agentVMSize
+    os_type         = var.osType
+    storage_profile = "ManagedDisks"
+    type            = "VirtualMachineScaleSets"
+    mode            = "System"
+  }
+  tags = {
+    displayname = "AKS Cluster"
+  }
+}
