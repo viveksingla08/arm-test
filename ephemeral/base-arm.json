@@ -1,0 +1,32 @@
+{ 
+  "type": "Microsoft.Compute/virtualMachines", 
+  "name": "myVirtualMachine", 
+  "location": "East US 2", 
+  "apiVersion": "2019-12-01", 
+  "properties": { 
+       "storageProfile": { 
+            "osDisk": { 
+              "diffDiskSettings": { 
+                "option": "Local" ,
+                "placement": "ResourceDisk"
+              }, 
+              "caching": "ReadOnly", 
+              "createOption": "FromImage" 
+            }, 
+            "imageReference": { 
+                "publisher": "MicrosoftWindowsServer", 
+                "offer": "WindowsServer", 
+                "sku": "2016-Datacenter-smalldisk", 
+                "version": "latest" 
+            }, 
+            "hardwareProfile": { 
+                 "vmSize": "Standard_DS2_v2" 
+             } 
+      }, 
+      "osProfile": { 
+        "computerNamePrefix": "myvirtualmachine", 
+        "adminUsername": "azureuser", 
+        "adminPassword": "P@ssw0rd!" 
+      } 
+    } 
+ }
