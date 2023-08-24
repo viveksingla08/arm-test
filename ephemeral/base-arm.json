@@ -1,32 +1,101 @@
-{ 
-  "type": "Microsoft.Compute/virtualMachines", 
-  "name": "myVirtualMachine", 
-  "location": "East US 2", 
-  "apiVersion": "2019-12-01", 
-  "properties": { 
-       "storageProfile": { 
-            "osDisk": { 
-              "diffDiskSettings": { 
-                "option": "Local" ,
-                "placement": "ResourceDisk"
-              }, 
-              "caching": "ReadOnly", 
-              "createOption": "FromImage" 
-            }, 
-            "imageReference": { 
-                "publisher": "MicrosoftWindowsServer", 
-                "offer": "WindowsServer", 
-                "sku": "2016-Datacenter-smalldisk", 
-                "version": "latest" 
-            }, 
-            "hardwareProfile": { 
-                 "vmSize": "Standard_DS2_v2" 
-             } 
-      }, 
-      "osProfile": { 
-        "computerNamePrefix": "myvirtualmachine", 
-        "adminUsername": "azureuser", 
-        "adminPassword": "P@ssw0rd!" 
-      } 
-    } 
- }
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_abc123epharm_name": {
+            "defaultValue": "abc123epharm",
+            "type": "String"
+        },
+        "disks_abc123epharm_OsDisk_1_d5c1b9af079b4e69b2775016b331d424_externalid": {
+            "defaultValue": "/subscriptions/155c4768-b71c-4e4b-a990-97407f43edda/resourceGroups/viv-rg/providers/Microsoft.Compute/disks/abc123epharm_OsDisk_1_d5c1b9af079b4e69b2775016b331d424",
+            "type": "String"
+        },
+        "networkInterfaces_abc123epharm931_z1_externalid": {
+            "defaultValue": "/subscriptions/155c4768-b71c-4e4b-a990-97407f43edda/resourceGroups/viv-rg/providers/Microsoft.Network/networkInterfaces/abc123epharm931_z1",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2023-03-01",
+            "name": "[parameters('virtualMachines_abc123epharm_name')]",
+            "location": "southcentralus",
+            "zones": [
+                "1"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D4ds_v5"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsDesktop",
+                        "offer": "Windows-10",
+                        "sku": "win10-22h2-pro-g2",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Windows",
+                        "diffDiskSettings": {
+                            "option": "Local",
+                            "placement": "ResourceDisk"
+                        },
+                        "name": "[concat(parameters('virtualMachines_abc123epharm_name'), '_OsDisk_1_d5c1b9af079b4e69b2775016b331d424')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadOnly",
+                        "managedDisk": {
+                            "storageAccountType": "Standard_LRS",
+                            "id": "[parameters('disks_abc123epharm_OsDisk_1_d5c1b9af079b4e69b2775016b331d424_externalid')]"
+                        },
+                        "deleteOption": "Delete",
+                        "diskSizeGB": 127
+                    },
+                    "dataDisks": [],
+                    "diskControllerType": "SCSI"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_abc123epharm_name')]",
+                    "adminUsername": "microsoft",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true,
+                        "patchSettings": {
+                            "patchMode": "AutomaticByOS",
+                            "assessmentMode": "ImageDefault",
+                            "enableHotpatching": false
+                        },
+                        "enableVMAgentPlatformUpdates": false
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "securityProfile": {
+                    "uefiSettings": {
+                        "secureBootEnabled": true,
+                        "vTpmEnabled": true
+                    },
+                    "securityType": "TrustedLaunch"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_abc123epharm931_z1_externalid')]",
+                            "properties": {
+                                "deleteOption": "Detach"
+                            }
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                },
+                "licenseType": "Windows_Client"
+            }
+        }
+    ]
+}
